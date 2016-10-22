@@ -9,6 +9,7 @@
 import Foundation
 
 let BASE_URL = "http://api.openweathermap.org/data/2.5/weather?"
+let BASE_FORECAST_URL = "http://api.openweathermap.org/data/2.5/forecast/daily?"
 let LATITUDE = "lat="
 let LONGITUDE = "&lon="
 let APP_ID = "&appid="
@@ -17,9 +18,11 @@ let API_KEY = "294c2bdc1cec983192f139eaf975b49a"
 typealias DownloadComplete = () -> ()
 
 
-let CURRENT_WEATHER_URL = "\(BASE_URL)\(LATITUDE)55.75\(LONGITUDE)37.62\(APP_ID)\(API_KEY)"
+let CURRENT_WEATHER_URL = "\(BASE_URL)\(LATITUDE)\(Location.sharedInstance.latitude!)\(LONGITUDE)\(Location.sharedInstance.longitude!)\(APP_ID)\(API_KEY)"
 
-let FORECAST_URL = "http://api.openweathermap.org/data/2.5/forecast/daily?lat=55.75&lon=37.62&cnt=10&mode=json&appid=294c2bdc1cec983192f139eaf975b49a"
+let FORECAST_URL = "\(BASE_FORECAST_URL)\(LATITUDE)\(Location.sharedInstance.latitude!)\(LONGITUDE)\(Location.sharedInstance.longitude!)\(APP_ID)\(API_KEY)"
+
+//let FORECAST_URL = "http://api.openweathermap.org/data/2.5/forecast/daily?lat=55.75&lon=37.62&cnt=10&mode=json&appid=294c2bdc1cec983192f139eaf975b49a"
 
 
 //let CURRENT_WEATHER_URL = "http://api.openweathermap.org/data/2.5/weather?lat=\(Location.sharedInstance.latitude!)&lon=\(Location.sharedInstance.longitude!)&appid=\(API_KEY)"

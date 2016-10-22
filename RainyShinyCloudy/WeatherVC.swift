@@ -8,6 +8,7 @@
 
 import UIKit
 import Alamofire
+import CoreLocation
 
 class WeatherVC: UIViewController {
     
@@ -25,6 +26,9 @@ class WeatherVC: UIViewController {
     var forecast: Forecast!
     var forecasts = [Forecast]()
     
+    let locationManager = CLLocationManager()
+    var currentLocation: CLLocation!
+    
     // MARK: - viewDidLoad
 
     override func viewDidLoad() {
@@ -33,19 +37,49 @@ class WeatherVC: UIViewController {
         self.tableView.delegate = self
         self.tableView.dataSource = self
         
+        self.locationManager.delegate = self
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        self.locationManager.requestWhenInUseAuthorization()
+        self.locationManager.startMonitoringSignificantLocationChanges()
+        
         currentWeather = CurrentWeather()
         
-        currentWeather.downloadWeatherDetails { 
-            // Setup UI to load downloaded data
+        
+        
+    }
+    
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        locationAuthStatus()
+    }
+    
+    
+    
+    func locationAuthStatus() {
+        if CLLocationManager.authorizationStatus() == .authorizedWhenInUse {
             
-            self.downloadForecastData {
+            currentLocation = locationManager.location
+            
+            Location.sharedInstance.latitude = currentLocation.coordinate.latitude
+            Location.sharedInstance.longitude = currentLocation.coordinate.longitude
+            
+            currentWeather.downloadWeatherDetails {
                 
-                self.updateMainUI()
+                self.downloadForecastData {
+                    
+                    self.updateMainUI()
+                }
+                
             }
+
             
+        } else {
+            
+            locationManager.requestWhenInUseAuthorization()
+            locationAuthStatus()
         }
-        
-        
     }
 
     func updateMainUI() {
@@ -61,6 +95,8 @@ class WeatherVC: UIViewController {
     
     func downloadForecastData(completed: @escaping DownloadComplete) {
         
+        print("FORECAST_URL = " + FORECAST_URL)
+        
         Alamofire.request(FORECAST_URL).responseJSON { response in
             
             let result = response.result
@@ -73,21 +109,25 @@ class WeatherVC: UIViewController {
                         let forecast = Forecast(weatherDict: obj)
                         self.forecasts.append(forecast)
                         
+//                        print(obj)
                     }
+                    
+                    self.forecasts.remove(at: 0)
+                    self.tableView.reloadData()
                     
                 }
                 
             }
             
             completed()
-            
         }
-        
     }
 
     
 
 }
+
+
 
 // MARK: - UITableViewDataSource
 
@@ -97,12 +137,18 @@ extension WeatherVC: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 6
+        
+        return forecasts.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "weatherCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "weatherCell", for: indexPath) as! WeatherCell
+        
+        
+        let forecast = forecasts[indexPath.row]
+        
+        cell.configureCell(forecast: forecast)
         
         return cell
         
@@ -116,6 +162,30 @@ extension WeatherVC: UITableViewDataSource {
 extension WeatherVC: UITableViewDelegate {
     
 }
+
+
+
+extension WeatherVC: CLLocationManagerDelegate {
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        
+        
+        
+        
+    }
+    
+    
+}
+
+
+
+
+
+
+
+
+
+
 
 
 

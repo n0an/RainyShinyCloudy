@@ -58,7 +58,7 @@ class Forecast {
                 let kelvinToCelcius = tempMax - 273.15
                 self._highTemp = "\(round(10*kelvinToCelcius)/10)"
                 
-                print("self._highTemp = " + self.highTemp)
+//                print("self._highTemp = " + self.highTemp)
             }
             
             if let tempMin = tempDict["min"] as? Double {
@@ -66,7 +66,7 @@ class Forecast {
                 let kelvinToCelcius = tempMin - 273.15
                 self._lowTemp = "\(round(10*kelvinToCelcius)/10)"
                 
-                print("self._lowTemp = " + self.lowTemp)
+//                print("self._lowTemp = " + self.lowTemp)
             }
         }
         
@@ -75,7 +75,7 @@ class Forecast {
             if let main = weather[0]["main"] as? String {
                 
                 self._weatherType = main.capitalized
-                print("self._weatherType = " + self._weatherType)
+//                print("self._weatherType = " + self._weatherType)
             }
         }
         
